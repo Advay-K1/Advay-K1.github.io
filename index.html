@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <!-- Google tag (gtag.js) -->
+  
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Advay Kadam</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"/>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css">
+  <link rel="stylesheet" href="css/styles.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:ital,wght@0,100..900;1,100..900&family=Parkinsans:wght@300..800&display=swap" rel="stylesheet">
+  <link rel="icon" href="data:,">
+
+</head>
+
+<body>
+
+  <!-- ======== FIXED NAV BAR ======== -->
+  <header class="fixed-header">
+    <nav class="navbar">
+      <ul class="nav-list">
+        <li><a href="#publications-section">Projects</a></li>
+        <li><a href="#misc-section">Hobbies</a></li>
+        <li><a href="#top">Advay Kadam</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <!-- ======== MAIN CONTENT ======== -->
+  <main>
+    <section id="top" class="section">
+      <h2 class="section-title no-highlight"><span class="name-title">
+        <span class="highlighted-text">Advay</span> Kadam </span>
+      </span></h2>
+    </section>
+
+    <section class="section photo-intro-container">
+      <!-- Photo Column -->
+      <div class="photo-part">
+        <img src="assets/images/photo.jpg" alt="Advay Kadam Photo" class="profile-photo"/>
+        <div class="social-icons">
+          <!-- Email Icon -->
+          <a href="mailto:advayk2@illinois.edu" target="_blank">
+            <i class="fa-regular fa-envelope"></i>
+          </a>
+
+          
+          <!-- GitHub Icon -->
+          <a href="https://github.com/Advay-K1" target="_blank">
+            <i class="fa-brands fa-github"></i>
+          </a>
+          
+          <!-- LinkedIn Icon -->
+          <a href="https://www.linkedin.com/in/advay-kadam/" target="_blank">
+            <i class="fa-brands fa-linkedin"></i>
+          </a>
+          
+          <!-- CV Link (no icon, just text "CV") -->
+          <a href="assets/files/Kadam, Advay.pdf" target="_blank" style="font-size: 19px;">
+            <strong>CV</strong>
+          </a>
+        </div>
+      </div>
+
+      <div class="intro-part">
+        <p>
+        I am an incoming third-year undergraduate at The University of Illinois Urbana-Champaign, majoring in Computer Science and Statistics with a minor in Mathematics. 
+        My research interests center around <strong> trustworthy machine learning</strong>, <strong>deep learning theory</strong>, and <strong>AI for social good</strong>. 
+        I aspire to develop reliable, robust, and scalable AI systems to solve problems in various domains.
+
+        </p>
+
+        <p>
+        I conducted research at the <strong>National Center for Supercomputing Applications (NCSA) </strong>, applying statistical analysis  to assess
+        <strong>post-quantum cryptographic algorithm resilience</strong> on the NCSA network. I identified that over 99% of SSH traffic lacked quantum-resistant encryption in collaboration with Dr. Phuong Cao.
+        Additionally, I developed a dashboard to parse Zeek logs and deliver live metrics on PQC algorithm usage and vulnerability.
+        Prior to this, I was a research intern at <strong>Rice University</strong> under Professor Aditya Mohite, where I trained various regression models to effectively predict the energy-gap of 2D-perovskites, 
+        which are materials used for solar cell synthesis.
+  
+        </p>
+
+        <p>
+          I am currently interning at <strong>The Bank of New York Mellon</strong> as a <strong>Data Science Intern</strong>, working in machine learning, feature-engineering,
+          and large-scale data processing. Previously, I interned at <strong>Procter & Gamble </strong> as an <strong>AI Software Engineering Intern</strong>
+          working on data pipeline optimization and fine-tuning a computer vision model for retail/sales applications.
+        
+        </p>
+      </div>
+    </section>
+
+    <!-- Publications Section -->
+    <section id="publications-section" class="section">
+      <h2 class="section-title">Projects</h2>
+      <div class="publication-item">
+        <p class="pub-title">
+          <strong>Time Series Regression Analysis of Sea Surface Temperatures during El Niño</strong>
+        </p>
+        <p class="pub-authors">
+          I developed robust time series regression models to forecast sea surface temperatures (SSTs) during El Niño events using meteorological data from the Tropical Atmosphere Ocean (TAO) buoy array. The dataset, aggregated to daily averages from 1980 to 1998, included variables such as wind velocity, humidity, and air temperature. After addressing non-stationarity and variance instability through transformation and differencing, I evaluated multiple models using AIC, BIC, and F-tests. Residual diagnostics—including ACF/PACF plots and Ljung-Box tests—confirmed the presence of autocorrelated errors, and I found that a regression model accounting for this autocorrelation achieved the best performance (AIC = -2.7, R² = 0.99, RMSE = 0.06), effectively capturing SST variation during El Niño cycles.
+        </p>
+       
+        <p class="pub-links">
+          [<a href="https://github.com/Advay-K1/SST-Time-Series-Analysis" target="_blank">Repository Link</a>]
+        </p>
+        <p class="pub-links">
+          [<a href="assets/files/SSTRegressionAnalysisReport (1).pdf" target="_blank">Paper</a>]
+        </p>
+      </div>
+      <div class="publication-item">
+        <p class="pub-title">
+          <strong>Regression Library with F-test for Reduced Regression Coefficients in C++</strong>
+        </p>
+        <p class="pub-authors">
+          This C++ library implements linear regression from scratch with a focus on performance and flexibility. Built on xtensor and xtensor-blas for efficient, NumPy-like matrix operations, it supports ordinary least squares with diagnostics such as coefficient estimates, standard errors, and model summaries. It includes F-tests for evaluating reduced models and uses boost::math for statistical inference. The library is modular and extensible, with planned support for confidence intervals, robust regression, and generalized linear models.
+
+
+        </p>
+        <p class="pub-links">
+          [<a href="https://github.com/Advay-K1/LinearRegressionScratch" target="_blank">Repository Link</a>]
+        </p>
+      </div>
+
+      <div class="publication-item">
+        <p class="pub-title">
+          <strong> IMC Prosperity Trading Challenge Analysis</strong>
+        </p>
+        <p class="pub-authors">
+          I competed in Prosperity, a 15-day algorithmic trading competition set in a fictional archipelago, where the objective was to maximize profits in the form of SeaShells through both automated and manual trading. I designed and implemented a Python-based trading bot that dynamically adapted to changing market conditions, optimized execution timing, and managed inventory risk across multiple assets. My strategy consistently outperformed competitors in real-time simulated markets, earning me a top <strong>140 finish out of over 12,000 participants globally </strong>in the algorithmic trading challenge.
+
+
+        </p>
+        <p class="pub-links">
+          [<a href="https://github.com/Advay-K1/IMC_Prosperity" target="_blank">Repository Link</a>]
+        </p>
+      </div>
+    </section>
+
+    <!-- Misc Section -->
+    <section id="misc-section" class="section">
+      <h2 class="section-title">Hobbies</h2>
+      <div class="intro-part">
+        <p>
+        In my spare time, I enjoy playing both soccer and tennis, and supporting my beloved FC Barcelona. I also 
+        love exploring the outdoors, baking, and trying new cuisines. 
+        </p>
+      </div>
+    </section>
+
+  </main>
+
+ 
+  <script src="js/main.js"></script>
+</body>
+</html>
