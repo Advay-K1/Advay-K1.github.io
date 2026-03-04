@@ -1,158 +1,460 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-  <!-- Google tag (gtag.js) -->
-  
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Advay Kadam</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"/>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css">
-  <link rel="stylesheet" href="css/styles.css" />
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:ital,wght@0,100..900;1,100..900&family=Parkinsans:wght@300..800&display=swap" rel="stylesheet">
-  <link rel="icon" href="data:,">
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg:        #e8e0d4;
+      --bg-alt:    #ddd4c5;
+      --border:    #c4b8a4;
+      --text:      #1e1610;
+      --text-muted:#5e5345;
+      --accent:    #7a4f2c;
+      --accent-light: #a67c52;
+      --link:      #4a2e10;
+      --link-hover:#7a4f2c;
+    }
 
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { font-size: 16px; scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      font-weight: 300;
+      line-height: 1.7;
+      min-height: 100vh;
+    }
+
+    /* ── NAV ── */
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: var(--bg);
+      border-bottom: 1px solid var(--border);
+      padding: 0 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 52px;
+    }
+
+    .nav-logo {
+      font-family: 'Lora', serif;
+      font-weight: 600;
+      font-size: 1.05rem;
+      color: var(--text);
+      text-decoration: none;
+      letter-spacing: 0.01em;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 2rem;
+      list-style: none;
+    }
+
+    .nav-links a {
+      font-size: 0.88rem;
+      font-weight: 400;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+
+    .nav-links a:hover { color: var(--accent); }
+
+    /* ── LAYOUT ── */
+    .container {
+      max-width: 780px;
+      margin: 0 auto;
+      padding: 3.5rem 2rem 5rem;
+    }
+
+    /* ── PROFILE BLOCK ── */
+    .profile {
+      padding-bottom: 2.8rem;
+      /* border-bottom: 1px solid var(--border); */
+      margin-bottom: 3rem;
+    }
+
+    .profile-name {
+      font-family: 'Lora', serif;
+      font-size: 2.1rem;
+      font-weight: 600;
+      line-height: 1.2;
+      margin-bottom: 0.3rem;
+      color: var(--text);
+    }
+
+    .profile-title {
+      font-size: 0.95rem;
+      color: var(--text-muted);
+      margin-bottom: 0.15rem;
+    }
+
+    .profile-dept {
+      font-size: 0.92rem;
+      color: var(--text-muted);
+      margin-bottom: 1.2rem;
+    }
+
+    .profile-inst {
+      font-family: 'Lora', serif;
+      font-size: 0.97rem;
+      font-style: italic;
+      color: var(--accent);
+      margin-bottom: 1.2rem;
+    }
+
+    .profile-links {
+      display: flex;
+      flex-direction: column;
+      gap: 0.3rem;
+    }
+
+    .profile-links a {
+      font-size: 0.88rem;
+      color: var(--link);
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      transition: color 0.2s;
+    }
+
+    .profile-links a:hover { color: var(--link-hover); }
+
+    .profile-links a svg {
+      width: 15px;
+      height: 15px;
+      flex-shrink: 0;
+    }
+
+    /* Avatar placeholder */
+    .avatar {
+      width: 130px;
+      height: 130px;
+      border-radius: 4px;
+      background: var(--bg-alt);
+      border: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .avatar-initials {
+      font-family: 'Lora', serif;
+      font-size: 2rem;
+      font-weight: 600;
+      color: var(--accent-light);
+      letter-spacing: -0.02em;
+    }
+
+    /* ── SECTIONS ── */
+    section { margin-bottom: 3rem; }
+
+    .section-heading {
+      font-family: 'Lora', serif;
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 1.1rem;
+      padding-bottom: 0.4rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .section-heading a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    /* ── RESEARCH ── */
+    .research-intro {
+      font-size: 0.97rem;
+      color: var(--text);
+      line-height: 1.8;
+      margin-bottom: 1.4rem;
+    }
+
+    .research-areas {
+      display: flex;
+      flex-direction: column;
+      gap: 1.1rem;
+    }
+
+    .research-area {
+      display: grid;
+      grid-template-columns: 3px 1fr;
+      gap: 1rem;
+      align-items: start;
+    }
+
+    .research-area-bar {
+      width: 3px;
+      height: 100%;
+      min-height: 60px;
+      background: var(--accent-light);
+      border-radius: 2px;
+    }
+
+    .research-area-title {
+      font-family: 'Lora', serif;
+      font-size: 0.97rem;
+      font-weight: 500;
+      color: var(--text);
+      margin-bottom: 0.25rem;
+    }
+
+    .research-area-desc {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      line-height: 1.7;
+    }
+
+    /* ── FOOTER ── */
+    footer {
+      margin-top: 4rem;
+      padding-top: 1.4rem;
+      border-top: 1px solid var(--border);
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    footer a {
+      color: var(--text-muted);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+
+    footer a:hover { color: var(--accent); }
+
+    /* ── ANIMATIONS ── */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(14px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .profile    { animation: fadeUp 0.5s ease both; }
+    section:nth-of-type(1) { animation: fadeUp 0.5s 0.1s ease both; }
+    section:nth-of-type(2) { animation: fadeUp 0.5s 0.2s ease both; }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 560px) {
+      .profile { grid-template-columns: 1fr; }
+      .avatar  { display: none; }
+      .nav-links { gap: 1.2rem; }
+    }
+
+    /* ── NEWS ── */
+    .news-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.65rem;
+    }
+
+    .news-list li {
+      font-size: 0.92rem;
+      color: var(--text);
+      line-height: 1.65;
+      padding-left: 1.1rem;
+      position: relative;
+    }
+
+    .news-list li::before {
+      content: "▸";
+      position: absolute;
+      left: 0;
+      color: var(--accent-light);
+      font-size: 0.75rem;
+      top: 0.22em;
+    }
+
+    .news-date {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      margin-right: 0.4rem;
+      font-style: italic;
+    }
+  </style>
 </head>
-
 <body>
 
-  <!-- ======== FIXED NAV BAR ======== -->
-  <header class="fixed-header">
-    <nav class="navbar">
-      <ul class="nav-list">
-        <li><a href="#publications-section">Projects</a></li>
-        <li><a href="#misc-section">Hobbies</a></li>
-        <li><a href="#top">Advay Kadam</a></li>
-      </ul>
-    </nav>
-  </header>
+  <!-- NAV -->
+  <nav>
+    <a class="nav-logo" href="#">AK</a>
+    <ul class="nav-links">
+      <li><a href="#about">About</a></li>
+      <li><a href="#news">News</a></li>
+      <li><a href="#interests">Interests</a></li>
+      <li><a href="#research">Research</a></li>
+      <li><a href="#industry">Industry</a></li>
+    </ul>
+  </nav>
 
-  <!-- ======== MAIN CONTENT ======== -->
-  <main>
-    <section id="top" class="section">
-      <h2 class="section-title no-highlight"><span class="name-title">
-        <span class="highlighted-text">Advay</span> Kadam </span>
-      </span></h2>
-    </section>
+  <!-- MAIN -->
+  <main class="container">
 
-    <section class="section photo-intro-container">
-      <!-- Photo Column -->
-      <div class="photo-part">
-        <img src="assets/images/photo.jpg" alt="Advay Kadam Photo" class="profile-photo"/>
-        <div class="social-icons">
-          <!-- Email Icon -->
-          <a href="mailto:advayk2@illinois.edu" target="_blank">
-            <i class="fa-regular fa-envelope"></i>
-          </a>
+    <!-- PROFILE -->
+    <div class="profile" id="about">
+      <div>
+        <h1 class="profile-name">Advay Kadam</h1>
+        <p class="profile-title">Student Researcher</p>
+        <p class="profile-dept">Department of Computer Science &amp; Statistics</p>
+        <p class="profile-inst">University of Illinois Urbana-Champaign</p>
 
-          
-          <!-- GitHub Icon -->
-          <a href="https://github.com/Advay-K1" target="_blank">
-            <i class="fa-brands fa-github"></i>
+        <div class="profile-links">
+          <a href="https://github.com/Advay-K1" target="_blank" rel="noopener">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/>
+            </svg>
+            github.com/Advay-K1
           </a>
-          
-          <!-- LinkedIn Icon -->
-          <a href="https://www.linkedin.com/in/advay-kadam/" target="_blank">
-            <i class="fa-brands fa-linkedin"></i>
+          <a href="mailto:advay.kadam10@gmail.com">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+              <polyline points="22,6 12,13 2,6"/>
+            </svg>
+            advay.kadam10@gmail.com
           </a>
-          
-          <!-- CV Link (no icon, just text "CV") -->
-          <a href="assets/files/Kadam, Advay.pdf" target="_blank" style="font-size: 19px;">
-            <strong>CV</strong>
+          <a href="https://www.linkedin.com/in/advay-kadam/" target="_blank" rel="noopener">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/>
+              <rect x="2" y="9" width="4" height="12"/>
+              <circle cx="4" cy="4" r="2"/>
+            </svg>
+            linkedin.com/in/advay-kadam
+          </a>
+          <a href="CV/Advay_Kadam.pdf" target="_blank" rel="noopener">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+              <polyline points="14 2 14 8 20 8"/>
+              <line x1="16" y1="13" x2="8" y2="13"/>
+              <line x1="16" y1="17" x2="8" y2="17"/>
+              <polyline points="10 9 9 9 8 9"/>
+            </svg>
+            Curriculum Vitae
           </a>
         </div>
       </div>
 
-      <div class="intro-part">
-        <p>
-        I am an incoming third-year undergraduate at <strong>The University of Illinois Urbana-Champaign</strong>, majoring in <strong>Computer Science </strong>and <strong>Statistics</strong> with a minor in <strong>Mathematics</strong>. 
-        My research interests center around <strong> trustworthy machine learning</strong>, <strong>deep learning theory</strong>, and <strong>AI for social good</strong>. 
-        I aspire to develop reliable, robust, and scalable AI systems to solve problems in various domains.
 
-        </p>
+    </div>
 
-        <p>
-        I conducted research at the <strong>National Center for Supercomputing Applications (NCSA) </strong>, applying statistical analysis  to assess
-        <strong>post-quantum cryptographic algorithm resilience</strong> on the NCSA network. I identified that over 99% of SSH traffic lacked quantum-resistant encryption in collaboration with Dr. Phuong Cao.
-        Additionally, I developed a dashboard to parse Zeek logs and deliver live metrics on PQC algorithm usage and vulnerability.
-        Prior to this, I was a research intern at <strong>Rice University</strong> under Professor Aditya Mohite, where I trained various regression models to effectively predict the energy-gap of 2D-perovskites, 
-        which are materials used for solar cell synthesis.
-  
-        </p>
 
-        <p>
-          I am currently interning at <strong>The Bank of New York Mellon</strong> as a <strong>Data Science and Engineering Intern</strong>, developing a pipeline for metadata security-level classification for 4,000+ datasets 
-          in a data lake. Previously, I interned at <strong>Procter & Gamble </strong> as an <strong>AI Software Engineering Intern</strong>
-          working on data pipeline optimization and fine-tuning a computer vision model for retail/sales applications.
-        
-        </p>
+    <!-- NEWS -->
+    <section id="news">
+      <h2 class="section-heading">News</h2>
+      <ul class="news-list">
+        <li><span class="news-date">Feb 2026</span> Accepted offer to join Amazon as a Software Development Engineer Intern for Summer 2026 in NYC.</li>
+        <li><span class="news-date">Dec 2025</span> Started a new research project on developing kernel fusions for AWS Trainium Hardware at the Supercomputing System & AI Lab (SSAIL) at UIUC.</li>
+        <li><span class="news-date">Aug 2025</span> Completed internship at BNY Mellon, shipping a multi-agent system (MAS) into production.</li>
+      </ul>
+    </section>
+    <!-- INTERESTS -->
+    <section id="interests">
+      <h2 class="section-heading">Interests</h2>
+      <p class="research-intro">
+        I am a student researcher at the University of Illinois Urbana-Champaign, where I study
+        Computer Science and Statistics. My work sits at the intersection of machine learning and computer systems —
+        I am broadly interested in how we build efficient, scalable, and principled computational
+        systems to train models with trillions of parameters.
+      </p>
+    </section>
+
+    <!-- RESEARCH -->
+    <section id="research">
+      <h2 class="section-heading">Research</h2>
+
+      <div class="research-areas">
+
+        <div class="research-area">
+          <div class="research-area-bar"></div>
+          <div>
+            <p class="research-area-title">Machine Learning Systems Researcher @ Supercomputing System & AI Lab</p>
+            <p class="research-area-desc">
+             Developing fused training kernels for Mixture-of-Experts models on AWS Trainium via the Neuron Kernel Interface, using PyTorch Profiler to identify and target high-frequency transformer primitives for kernel-fusion optimizations that improve training throughput.
+            </p>
+          </div>
+        </div>
+
+        <div class="research-area">
+          <div class="research-area-bar"></div>
+          <div>
+            <p class="research-area-title">Supercomputing Systems Researcher @ National Center for Supercomputing Applications</p>
+            <p class="research-area-desc">
+              Analyzed 2+ PB of real-time Zeek network telemetry to assess post-quantum cryptography readiness across enterprise SSH traffic, and built a Flask dashboard to stream live PQC metrics and cryptographic risk insights.
+            </p>
+          </div>
+        </div>
+
       </div>
     </section>
 
-    <!-- Publications Section -->
-    <section id="publications-section" class="section">
-      <h2 class="section-title">Projects</h2>
-      <div class="publication-item">
-        <p class="pub-title">
-          <strong>Time Series Regression Analysis of Sea Surface Temperatures during El Niño</strong>
-        </p>
-        <p class="pub-authors">
-          I developed robust time series regression models to forecast sea surface temperatures (SSTs) during El Niño events using meteorological data from the Tropical Atmosphere Ocean (TAO) buoy array. The dataset, aggregated to daily averages from 1980 to 1998, included variables such as wind velocity, humidity, and air temperature. After addressing non-stationarity and variance instability through transformation and differencing, I evaluated multiple models using AIC, BIC, and F-tests. Residual diagnostics—including ACF/PACF plots and Ljung-Box tests—confirmed the presence of autocorrelated errors, and I found that a regression model accounting for this autocorrelation achieved the best performance (AIC = -2.7, R² = 0.99, RMSE = 0.06), effectively capturing SST variation during El Niño cycles.
-        </p>
-       
-        <p class="pub-links">
-          [<a href="https://github.com/Advay-K1/SST-Time-Series-Analysis" target="_blank">Repository Link</a>]
-        </p>
-        <p class="pub-links">
-          [<a href="assets/files/SSTRegressionAnalysisReport (1).pdf" target="_blank">Paper</a>]
-        </p>
-      </div>
-      <div class="publication-item">
-        <p class="pub-title">
-          <strong>Regression Library with F-test for Reduced Regression Coefficients in C++</strong>
-        </p>
-        <p class="pub-authors">
-          This C++ library implements linear regression from scratch with a focus on performance and flexibility. Built on xtensor and xtensor-blas for efficient, NumPy-like matrix operations, it supports ordinary least squares with diagnostics such as coefficient estimates, standard errors, and model summaries. It includes F-tests for evaluating reduced models and uses boost::math for statistical inference. The library is modular and extensible, with planned support for confidence intervals, robust regression, and generalized linear models.
+    <!-- INDUSTRY -->
+    <section id="industry">
+      <h2 class="section-heading">Industry</h2>
 
+      <div class="research-areas">
 
-        </p>
-        <p class="pub-links">
-          [<a href="https://github.com/Advay-K1/LinearRegressionScratch" target="_blank">Repository Link</a>]
-        </p>
-      </div>
+        <div class="research-area">
+          <div class="research-area-bar"></div>
+          <div>
+            <p class="research-area-title">Software Development Engineer Intern &mdash; Amazon <span style="font-weight:300; color:var(--text-muted)">&middot; Summer 2026</span></p>
+            <p class="research-area-desc">
+              I will be joining the Amazon Traffic Engineering team in NYC, building scalable, high-performance
+networking and real-time data processing systems that steer and protect customer internet ingress.
+            </p>
+          </div>
+        </div>
 
-      <div class="publication-item">
-        <p class="pub-title">
-          <strong> IMC Prosperity Trading Challenge Analysis</strong>
-        </p>
-        <p class="pub-authors">
-          I competed in Prosperity, a 15-day algorithmic trading competition set in a fictional archipelago, where the objective was to maximize profits in the form of SeaShells through both automated and manual trading. I designed and implemented a Python-based trading bot that dynamically adapted to changing market conditions, optimized execution timing, and managed inventory risk across multiple assets. My strategy consistently outperformed competitors in real-time simulated markets, earning me a top <strong>140 finish out of over 12,000 participants globally </strong>in the algorithmic trading challenge.
+        <div class="research-area">
+          <div class="research-area-bar"></div>
+          <div>
+            <p class="research-area-title">Software Engineer Intern &mdash; BNY Mellon <span style="font-weight:300; color:var(--text-muted)">&middot; Summer 2025</span></p>
+            <p class="research-area-desc">
+              Engineered a FastAPI microservice orchestrating a multi-agent LangChain pipeline with AWS SQS and Lambda to classify and persist column-level security labels for 30,000+ dataset columns across 500+ daily requests, reducing end-to-end latency by 30%
+            </p>
+          </div>
+        </div>
 
+        <div class="research-area">
+          <div class="research-area-bar"></div>
+          <div>
+            <p class="research-area-title">Software Engineer Intern &mdash; Procter & Gamble <span style="font-weight:300; color:var(--text-muted)">&middot; Summer 2024</span></p>
+            <p class="research-area-desc">
+              Optimized an Azure Databricks sales ETL pipeline and built a YOLOv9-powered ML ingestion pipeline for retail shelf image classification, reducing runtime by 40%, cluster costs by 25%, and increasing labeled data coverage by 20%.
+            </p>
+          </div>
+        </div>
 
-        </p>
-        <p class="pub-links">
-          [<a href="https://github.com/Advay-K1/IMC_Prosperity" target="_blank">Repository Link</a>]
-        </p>
       </div>
     </section>
 
-    <!-- Misc Section -->
-    <section id="misc-section" class="section">
-      <h2 class="section-title">Hobbies</h2>
-      <div class="intro-part">
-        <p>
-        In my spare time, I enjoy playing both soccer and tennis, and supporting my beloved FC Barcelona. I also 
-        love exploring the outdoors, baking, and trying new cuisines. 
-        </p>
-      </div>
-    </section>
+    <!-- FOOTER -->
+    <footer>
+      <span>© Advay Kadam</span>
+      <a href="https://github.com/Advay-K1" target="_blank" rel="noopener">GitHub</a>
+    </footer>
 
   </main>
 
- 
-  <script src="js/main.js"></script>
 </body>
 </html>
