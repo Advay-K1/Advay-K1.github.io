@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Neural Network Visualization</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --bg: #e8e0d4;
+      --surface: #ddd4c5;
+      --border: #c4b8a4;
+      --text: #1e1610;
+      --text-muted: #5e5345;
+      --node-input: #7a4f2c;
+      --node-hidden: #a67c52;
+      --node-output: #4a2e10;
+      --signal: #c4793a;
+      --glow-blue: rgba(122,79,44,0.35);
+      --glow-purple: rgba(166,124,82,0.35);
+      --glow-green: rgba(74,46,16,0.35);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      overflow-x: hidden;
+    }
+
+    /* subtle grid background */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(122,79,44,0.06) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(122,79,44,0.06) 1px, transparent 1px);
+      background-size: 40px 40px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    header {
+      position: relative;
+      z-index: 1;
+      text-align: center;
+      padding: 3rem 2rem 1.5rem;
+    }
+
+    header h1 {
+      font-family: 'Lora', serif;
+      font-size: clamp(1.4rem, 4vw, 2.2rem);
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      color: #1e1610;
+      margin-bottom: 0.5rem;
+    }
+
+    header p {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    /* ── CONTROLS ── */
+    .controls {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin-bottom: 1.5rem;
+      padding: 0 1rem;
+    }
+
+    .ctrl-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.3rem;
+      align-items: center;
+    }
+
+    .ctrl-label {
+      font-size: 0.65rem;
+      color: var(--text-muted);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+
+    .ctrl-row {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    button.icon-btn {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      color: var(--text);
+      width: 28px;
+      height: 28px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 0.9rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: border-color 0.2s, color 0.2s;
+    }
+
+    button.icon-btn:hover { border-color: var(--node-input); color: var(--node-input); }
+
+    .ctrl-val {
+      font-size: 0.85rem;
+      color: var(--text);
+      min-width: 18px;
+      text-align: center;
+    }
+
+    .btn {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 0.4rem 1rem;
+      border-radius: 4px;
+      cursor: pointer;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.72rem;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      transition: border-color 0.2s, color 0.2s, background 0.2s;
+    }
+
+    .btn:hover { border-color: var(--node-hidden); color: var(--node-hidden); }
+    .btn.active { border-color: var(--signal); color: var(--signal); background: rgba(196,121,58,0.12); }
+
+    /* ── CANVAS WRAPPER ── */
+    .canvas-wrap {
+      position: relative;
+      z-index: 1;
+      width: min(96vw, 900px);
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    canvas { display: block; width: 100%; }
+
+    /* ── LEGEND ── */
+    .legend {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      gap: 2rem;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin-top: 1.2rem;
+      padding-bottom: 2rem;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+
+    .legend-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    /* ── STATS BAR ── */
+    .stats {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      gap: 2.5rem;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin-top: 0.5rem;
+      margin-bottom: 1rem;
+    }
+
+    .stat {
+      text-align: center;
+    }
+
+    .stat-val {
+      font-family: 'Lora', serif;
+      font-size: 1.3rem;
+      color: #1e1610;
+    }
+
+    .stat-label {
+      font-size: 0.62rem;
+      color: var(--text-muted);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>Neural Network Visualizer</h1>
+    <p>Interactive feedforward architecture · animated signal propagation</p>
+  </header>
+
+  <div class="stats">
+    <div class="stat"><div class="stat-val" id="stat-nodes">0</div><div class="stat-label">Nodes</div></div>
+    <div class="stat"><div class="stat-val" id="stat-edges">0</div><div class="stat-label">Connections</div></div>
+    <div class="stat"><div class="stat-val" id="stat-layers">0</div><div class="stat-label">Layers</div></div>
+    <div class="stat"><div class="stat-val" id="stat-params">0</div><div class="stat-label">Parameters</div></div>
+  </div>
+
+  <div class="controls">
+    <div class="ctrl-group">
+      <span class="ctrl-label">Input Nodes</span>
+      <div class="ctrl-row">
+        <button class="icon-btn" onclick="changeLayer(0,-1)">−</button>
+        <span class="ctrl-val" id="v0">3</span>
+        <button class="icon-btn" onclick="changeLayer(0,1)">+</button>
+      </div>
+    </div>
+    <div class="ctrl-group">
+      <span class="ctrl-label">Hidden 1</span>
+      <div class="ctrl-row">
+        <button class="icon-btn" onclick="changeLayer(1,-1)">−</button>
+        <span class="ctrl-val" id="v1">5</span>
+        <button class="icon-btn" onclick="changeLayer(1,1)">+</button>
+      </div>
+    </div>
+    <div class="ctrl-group">
+      <span class="ctrl-label">Hidden 2</span>
+      <div class="ctrl-row">
+        <button class="icon-btn" onclick="changeLayer(2,-1)">−</button>
+        <span class="ctrl-val" id="v2">4</span>
+        <button class="icon-btn" onclick="changeLayer(2,1)">+</button>
+      </div>
+    </div>
+    <div class="ctrl-group">
+      <span class="ctrl-label">Output Nodes</span>
+      <div class="ctrl-row">
+        <button class="icon-btn" onclick="changeLayer(3,-1)">−</button>
+        <span class="ctrl-val" id="v3">2</span>
+        <button class="icon-btn" onclick="changeLayer(3,1)">+</button>
+      </div>
+    </div>
+    <div class="ctrl-group">
+      <span class="ctrl-label">Action</span>
+      <div class="ctrl-row" style="gap:0.5rem">
+        <button class="btn" id="btn-fire" onclick="fireSignal()">Fire Signal</button>
+        <button class="btn" id="btn-auto" onclick="toggleAuto()">Auto</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="canvas-wrap">
+    <canvas id="nn" height="420"></canvas>
+  </div>
+
+  <div class="legend">
+    <div class="legend-item"><div class="legend-dot" style="background:#3b82f6"></div>Input Layer</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#8b5cf6"></div>Hidden Layers</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#10b981"></div>Output Layer</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#f59e0b"></div>Active Signal</div>
+  </div>
+
+  <script>
+    const canvas = document.getElementById('nn');
+    const ctx = canvas.getContext('2d');
+
+    let layers = [3, 5, 4, 2];
+    let signals = [];   // {progress, fromLayer, fromNode, toNode, color}
+    let nodeActivations = []; // per-layer per-node activation strength [0..1]
+    let autoMode = false;
+    let autoTimer = null;
+    let animFrame;
+
+    // ── Layout ──
+    function getLayout() {
+      const W = canvas.offsetWidth || 900;
+      const H = canvas.height;
+      const padX = 60, padY = 50;
+      const layerX = layers.map((_, i) => padX + i * (W - 2*padX) / (layers.length - 1));
+      const nodePos = layers.map((count, li) => {
+        const x = layerX[li];
+        return Array.from({length: count}, (_, ni) => {
+          const y = padY + (ni + 0.5) * (H - 2*padY) / count;
+          return {x, y};
+        });
+      });
+      return {W, H, nodePos};
+    }
+
+    // ── Colours ──
+    function layerColor(li) {
+      if (li === 0) return '#3b82f6';
+      if (li === layers.length - 1) return '#10b981';
+      return '#8b5cf6';
+    }
+
+    function layerGlow(li) {
+      if (li === 0) return 'rgba(59,130,246,';
+      if (li === layers.length - 1) return 'rgba(16,185,129,';
+      return 'rgba(139,92,246,';
+    }
+
+    // ── Draw ──
+    function draw() {
+      const {W, H, nodePos} = getLayout();
+      ctx.clearRect(0, 0, W, H);
+
+      // Draw edges
+      for (let li = 0; li < layers.length - 1; li++) {
+        for (let ni = 0; ni < layers[li]; ni++) {
+          for (let nj = 0; nj < layers[li+1]; nj++) {
+            const a = nodePos[li][ni];
+            const b = nodePos[li+1][nj];
+
+            // Check if any signal is traveling this edge
+            const sig = signals.find(s => s.fromLayer === li && s.fromNode === ni && s.toNode === nj);
+            if (sig) {
+              const grad = ctx.createLinearGradient(a.x, a.y, b.x, b.y);
+              grad.addColorStop(Math.max(0, sig.progress - 0.15), 'rgba(245,158,11,0)');
+              grad.addColorStop(sig.progress, 'rgba(245,158,11,0.9)');
+              grad.addColorStop(Math.min(1, sig.progress + 0.15), 'rgba(245,158,11,0)');
+              ctx.beginPath();
+              ctx.moveTo(a.x, a.y);
+              ctx.lineTo(b.x, b.y);
+              ctx.strokeStyle = grad;
+              ctx.lineWidth = 2;
+              ctx.stroke();
+            } else {
+              ctx.beginPath();
+              ctx.moveTo(a.x, a.y);
+              ctx.lineTo(b.x, b.y);
+              ctx.strokeStyle = 'rgba(180,160,140,0.6)';
+              ctx.lineWidth = 0.8;
+              ctx.stroke();
+            }
+          }
+        }
+      }
+
+      // Draw nodes
+      for (let li = 0; li < layers.length; li++) {
+        for (let ni = 0; ni < layers[li]; ni++) {
+          const {x, y} = nodePos[li][ni];
+          const act = nodeActivations[li]?.[ni] || 0;
+          const col = layerColor(li);
+          const glowBase = layerGlow(li);
+          const r = 12;
+
+          // glow
+          if (act > 0.01) {
+            const grd = ctx.createRadialGradient(x, y, r, x, y, r + 22 * act);
+            grd.addColorStop(0, glowBase + (0.5 * act) + ')');
+            grd.addColorStop(1, glowBase + '0)');
+            ctx.beginPath();
+            ctx.arc(x, y, r + 22 * act, 0, Math.PI * 2);
+            ctx.fillStyle = grd;
+            ctx.fill();
+          }
+
+          // ring
+          ctx.beginPath();
+          ctx.arc(x, y, r, 0, Math.PI * 2);
+          ctx.strokeStyle = act > 0.01 ? col : 'rgba(255,255,255,0.12)';
+          ctx.lineWidth = act > 0.01 ? 2 : 1;
+          ctx.fillStyle = act > 0.01
+            ? glowBase + (0.25 * act) + ')'
+            : 'rgba(232,224,212,0.9)';
+          ctx.fill();
+          ctx.stroke();
+
+          // inner dot
+          ctx.beginPath();
+          ctx.arc(x, y, 4, 0, Math.PI * 2);
+          ctx.fillStyle = act > 0.01 ? col : 'rgba(255,255,255,0.15)';
+          ctx.fill();
+        }
+      }
+
+      // Layer labels
+      const labelY = H - 14;
+      const labels = layers.map((_, i) => {
+        if (i === 0) return 'Input';
+        if (i === layers.length - 1) return 'Output';
+        return `H${i}`;
+      });
+      for (let li = 0; li < layers.length; li++) {
+        ctx.fillStyle = 'rgba(74,96,128,0.8)';
+        ctx.font = '10px DM Sans, sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText(labels[li], nodePos[li][0].x, labelY);
+      }
+    }
+
+    // ── Signal propagation ──
+    function fireSignal() {
+      // Reset activations
+      nodeActivations = layers.map(n => new Array(n).fill(0));
+      signals = [];
+
+      // Activate all input nodes
+      for (let ni = 0; ni < layers[0]; ni++) {
+        nodeActivations[0][ni] = 1;
+      }
+
+      // Create signals for layer 0 → 1
+      spawnLayerSignals(0);
+    }
+
+    function spawnLayerSignals(fromLayer) {
+      for (let ni = 0; ni < layers[fromLayer]; ni++) {
+        for (let nj = 0; nj < layers[fromLayer+1]; nj++) {
+          signals.push({
+            fromLayer,
+            fromNode: ni,
+            toNode: nj,
+            progress: 0,
+            speed: 0.008 + Math.random() * 0.004
+          });
+        }
+      }
+    }
+
+    // ── Animation loop ──
+    function animate() {
+      animFrame = requestAnimationFrame(animate);
+
+      // Advance signals
+      let completedLayer = -1;
+      for (let i = signals.length - 1; i >= 0; i--) {
+        signals[i].progress += signals[i].speed;
+        if (signals[i].progress >= 1) {
+          const {fromLayer, toNode} = signals[i];
+          nodeActivations[fromLayer + 1][toNode] = 1;
+          completedLayer = fromLayer;
+          signals.splice(i, 1);
+        }
+      }
+
+      // Check if all signals for a layer are done → spawn next layer
+      if (completedLayer >= 0 && completedLayer + 1 < layers.length - 1) {
+        const layerSignalsLeft = signals.filter(s => s.fromLayer === completedLayer).length;
+        if (layerSignalsLeft === 0 && !signals.find(s => s.fromLayer > completedLayer)) {
+          spawnLayerSignals(completedLayer + 1);
+        }
+      }
+
+      // Decay activations slowly
+      for (let li = 0; li < nodeActivations.length; li++) {
+        for (let ni = 0; ni < (nodeActivations[li]?.length || 0); ni++) {
+          nodeActivations[li][ni] *= 0.985;
+        }
+      }
+
+      draw();
+    }
+
+    // ── Controls ──
+    function changeLayer(li, delta) {
+      layers[li] = Math.max(1, Math.min(8, layers[li] + delta));
+      document.getElementById('v' + li).textContent = layers[li];
+      nodeActivations = layers.map(n => new Array(n).fill(0));
+      signals = [];
+      updateStats();
+    }
+
+    function toggleAuto() {
+      autoMode = !autoMode;
+      const btn = document.getElementById('btn-auto');
+      btn.classList.toggle('active', autoMode);
+      if (autoMode) {
+        fireSignal();
+        autoTimer = setInterval(() => fireSignal(), 2800);
+      } else {
+        clearInterval(autoTimer);
+      }
+    }
+
+    function updateStats() {
+      const totalNodes = layers.reduce((a, b) => a + b, 0);
+      let totalEdges = 0, totalParams = 0;
+      for (let i = 0; i < layers.length - 1; i++) {
+        totalEdges += layers[i] * layers[i+1];
+        totalParams += layers[i] * layers[i+1] + layers[i+1];
+      }
+      document.getElementById('stat-nodes').textContent = totalNodes;
+      document.getElementById('stat-edges').textContent = totalEdges;
+      document.getElementById('stat-layers').textContent = layers.length;
+      document.getElementById('stat-params').textContent = totalParams;
+    }
+
+    // ── Init ──
+    function resize() {
+      const wrap = canvas.parentElement;
+      canvas.width = wrap.clientWidth;
+      draw();
+    }
+
+    window.addEventListener('resize', resize);
+    resize();
+    nodeActivations = layers.map(n => new Array(n).fill(0));
+    updateStats();
+    animate();
+  </script>
+</body>
+</html>
