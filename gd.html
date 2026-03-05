@@ -1,0 +1,830 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Gradient Descent Visualizer</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Lora:wght@400;600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --bg:           #e8e0d4;
+      --surface:      #ddd4c5;
+      --surface2:     #d4c9b8;
+      --border:       #c4b8a4;
+      --text:         #1e1610;
+      --text-muted:   #5e5345;
+      --accent:       #7a4f2c;
+      --accent-light: #a67c52;
+      --accent-pale:  #c4a882;
+      --link:         #4a2e10;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { font-size: 16px; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      font-weight: 300;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    /* subtle warm grid */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(122,79,44,0.06) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(122,79,44,0.06) 1px, transparent 1px);
+      background-size: 40px 40px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    header {
+      position: relative;
+      z-index: 1;
+      text-align: center;
+      padding: 2.5rem 2rem 1rem;
+    }
+
+    header h1 {
+      font-family: 'Lora', serif;
+      font-size: clamp(1.3rem, 3.5vw, 2rem);
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 0.4rem;
+    }
+
+    header p {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+
+    /* ── LAYOUT ── */
+    .main-grid {
+      position: relative;
+      z-index: 1;
+      display: grid;
+      grid-template-columns: 1fr 320px;
+      gap: 1.2rem;
+      width: min(98vw, 1100px);
+      padding: 0 1rem 3rem;
+    }
+
+    @media (max-width: 760px) {
+      .main-grid { grid-template-columns: 1fr; }
+    }
+
+    /* ── CANVAS ── */
+    .canvas-wrap {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    canvas#three-canvas {
+      display: block;
+      width: 100%;
+      height: 480px;
+    }
+
+    .canvas-hint {
+      position: absolute;
+      bottom: 10px;
+      right: 14px;
+      font-size: 0.68rem;
+      color: var(--text-muted);
+      letter-spacing: 0.05em;
+      pointer-events: none;
+    }
+
+    /* ── SIDE PANEL ── */
+    .panel {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1.1rem 1.2rem;
+    }
+
+    .card-title {
+      font-family: 'Lora', serif;
+      font-size: 0.88rem;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 0.9rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 1px solid var(--border);
+      letter-spacing: 0.02em;
+    }
+
+    /* ── LOSS CHART ── */
+    canvas#loss-chart {
+      display: block;
+      width: 100%;
+      height: 130px;
+      border-radius: 4px;
+    }
+
+    /* ── CONTROLS ── */
+    .ctrl-row {
+      display: flex;
+      flex-direction: column;
+      gap: 0.65rem;
+    }
+
+    .ctrl-item {
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+    }
+
+    .ctrl-label {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      letter-spacing: 0.04em;
+    }
+
+    .ctrl-label span { color: var(--accent); font-weight: 500; }
+
+    input[type=range] {
+      -webkit-appearance: none;
+      width: 100%;
+      height: 4px;
+      background: var(--border);
+      border-radius: 2px;
+      outline: none;
+    }
+
+    input[type=range]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 14px;
+      height: 14px;
+      background: var(--accent);
+      border-radius: 50%;
+      cursor: pointer;
+    }
+
+    select {
+      width: 100%;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.8rem;
+      padding: 0.35rem 0.6rem;
+      border-radius: 4px;
+      outline: none;
+      cursor: pointer;
+    }
+
+    /* ── BUTTONS ── */
+    .btn-row {
+      display: flex;
+      gap: 0.6rem;
+    }
+
+    .btn {
+      flex: 1;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.75rem;
+      font-weight: 400;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      padding: 0.45rem 0.5rem;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: border-color 0.2s, color 0.2s, background 0.2s;
+    }
+
+    .btn:hover { border-color: var(--accent); color: var(--accent); }
+    .btn.primary { background: var(--accent); border-color: var(--accent); color: #f5ede0; }
+    .btn.primary:hover { background: var(--accent-light); border-color: var(--accent-light); }
+
+    /* ── STATS ── */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.6rem;
+    }
+
+    .stat-box {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 5px;
+      padding: 0.55rem 0.7rem;
+    }
+
+    .stat-box-val {
+      font-family: 'Lora', serif;
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: var(--accent);
+    }
+
+    .stat-box-label {
+      font-size: 0.65rem;
+      color: var(--text-muted);
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+      margin-top: 0.1rem;
+    }
+
+    /* ── STEP LOG ── */
+    .step-log {
+      max-height: 140px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+    }
+
+    .step-log::-webkit-scrollbar { width: 4px; }
+    .step-log::-webkit-scrollbar-track { background: transparent; }
+    .step-log::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+    .log-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      padding: 0.2rem 0.4rem;
+      border-radius: 3px;
+      transition: background 0.15s;
+    }
+
+    .log-row.active {
+      background: rgba(122,79,44,0.1);
+      color: var(--text);
+    }
+
+    .log-row .step-num { color: var(--accent-light); font-weight: 500; }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>Gradient Descent Visualizer</h1>
+  <p>3D loss surface · animated step-by-step descent</p>
+</header>
+
+<div class="main-grid">
+
+  <!-- 3D CANVAS -->
+  <div class="canvas-wrap">
+    <canvas id="three-canvas"></canvas>
+    <div class="canvas-hint">drag to rotate · scroll to zoom</div>
+  </div>
+
+  <!-- SIDE PANEL -->
+  <div class="panel">
+
+    <!-- STATS -->
+    <div class="card">
+      <div class="card-title">Current State</div>
+      <div class="stats-grid">
+        <div class="stat-box">
+          <div class="stat-box-val" id="stat-step">0</div>
+          <div class="stat-box-label">Step</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-box-val" id="stat-loss">—</div>
+          <div class="stat-box-label">Loss</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-box-val" id="stat-x">—</div>
+          <div class="stat-box-label">x</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-box-val" id="stat-y">—</div>
+          <div class="stat-box-label">y</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- LOSS CURVE -->
+    <div class="card">
+      <div class="card-title">Loss Curve</div>
+      <canvas id="loss-chart"></canvas>
+    </div>
+
+    <!-- CONTROLS -->
+    <div class="card">
+      <div class="card-title">Parameters</div>
+      <div class="ctrl-row">
+        <div class="ctrl-item">
+          <div class="ctrl-label">Learning Rate <span id="lr-val">0.10</span></div>
+          <input type="range" id="lr" min="0.01" max="0.5" step="0.01" value="0.10"/>
+        </div>
+        <div class="ctrl-item">
+          <div class="ctrl-label">Surface <span id="surf-val"></span></div>
+          <select id="surface-select">
+            <option value="bowl">Simple Bowl</option>
+            <option value="saddle">Saddle Point</option>
+            <option value="rosenbrock">Rosenbrock</option>
+            <option value="bumpy">Bumpy (Local Minima)</option>
+          </select>
+        </div>
+        <div class="ctrl-item">
+          <div class="ctrl-label">Start Position <span id="start-val">Random</span></div>
+          <select id="start-select">
+            <option value="random">Random</option>
+            <option value="topleft">Top Left</option>
+            <option value="topright">Top Right</option>
+            <option value="far">Far Corner</option>
+          </select>
+        </div>
+        <div class="ctrl-item">
+          <div class="ctrl-label">Speed <span id="speed-val">1×</span></div>
+          <input type="range" id="speed" min="1" max="5" step="1" value="2"/>
+        </div>
+      </div>
+    </div>
+
+    <!-- ACTIONS -->
+    <div class="card">
+      <div class="card-title">Actions</div>
+      <div class="btn-row" style="margin-bottom:0.6rem">
+        <button class="btn primary" onclick="startDescent()">▶ Run</button>
+        <button class="btn" onclick="stepOnce()">Step</button>
+        <button class="btn" onclick="resetDescent()">Reset</button>
+      </div>
+    </div>
+
+    <!-- STEP LOG -->
+    <div class="card">
+      <div class="card-title">Step Log</div>
+      <div class="step-log" id="step-log"></div>
+    </div>
+
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+// ── CONFIG ──────────────────────────────────────────────────────────────────
+const GRID = 60;
+const RANGE = 2.5;
+const COLORS = {
+  bg:         0xe8e0d4,
+  surface_lo: 0xc4a882,
+  surface_hi: 0x7a4f2c,
+  path:       0x4a2e10,
+  point:      0x7a4f2c,
+  point_old:  0xa67c52,
+  grid:       0xc4b8a4,
+};
+
+// ── SURFACES ────────────────────────────────────────────────────────────────
+const surfaces = {
+  bowl: (x, y) => x*x + y*y,
+  saddle: (x, y) => x*x - y*y,
+  rosenbrock: (x, y) => {
+    const a=1, b=5;
+    return (a-x)**2 + b*(y - x*x)**2;
+  },
+  bumpy: (x, y) => Math.sin(3*x)*Math.cos(3*y)*0.5 + 0.3*(x*x + y*y),
+};
+
+const gradients = {
+  bowl: (x, y) => [2*x, 2*y],
+  saddle: (x, y) => [2*x, -2*y],
+  rosenbrock: (x, y) => {
+    const a=1, b=5;
+    return [-2*(a-x) - 4*b*x*(y-x*x), 2*b*(y-x*x)];
+  },
+  bumpy: (x, y) => [
+    3*Math.cos(3*x)*Math.cos(3*y)*0.5 + 0.6*x,
+    -3*Math.sin(3*x)*Math.sin(3*y)*0.5 + 0.6*y,
+  ],
+};
+
+const startPositions = {
+  random:   () => [(Math.random()-0.5)*3.5, (Math.random()-0.5)*3.5],
+  topleft:  () => [-1.8,  1.8],
+  topright: () => [ 1.8,  1.8],
+  far:      () => [-2.2, -2.2],
+};
+
+// ── STATE ────────────────────────────────────────────────────────────────────
+let surfKey = 'bowl';
+let lr = 0.10;
+let speed = 2;
+let pos = [0, 0];
+let path = [];
+let running = false;
+let animTimer = null;
+let stepCount = 0;
+let lossHistory = [];
+
+// ── THREE.JS SETUP ───────────────────────────────────────────────────────────
+const canvas3 = document.getElementById('three-canvas');
+const renderer = new THREE.WebGLRenderer({ canvas: canvas3, antialias: true });
+renderer.setPixelRatio(window.devicePixelRatio);
+renderer.setClearColor(COLORS.bg);
+
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(45, 1, 0.1, 100);
+camera.position.set(0, 6, 8);
+camera.lookAt(0, 0, 0);
+
+// Lighting
+const ambient = new THREE.AmbientLight(0xfff5e8, 0.7);
+scene.add(ambient);
+const dirLight = new THREE.DirectionalLight(0xffe0c0, 0.8);
+dirLight.position.set(5, 10, 5);
+scene.add(dirLight);
+
+// Orbit-like controls (manual)
+let isDragging = false, lastMouse = {x:0,y:0};
+let spherical = {theta: 0.5, phi: 0.9, r: 10};
+
+function updateCamera() {
+  camera.position.set(
+    spherical.r * Math.sin(spherical.phi) * Math.sin(spherical.theta),
+    spherical.r * Math.cos(spherical.phi),
+    spherical.r * Math.sin(spherical.phi) * Math.cos(spherical.theta)
+  );
+  camera.lookAt(0, 0, 0);
+}
+updateCamera();
+
+canvas3.addEventListener('mousedown', e => { isDragging = true; lastMouse = {x:e.clientX,y:e.clientY}; });
+window.addEventListener('mouseup', () => isDragging = false);
+window.addEventListener('mousemove', e => {
+  if (!isDragging) return;
+  const dx = e.clientX - lastMouse.x, dy = e.clientY - lastMouse.y;
+  spherical.theta -= dx * 0.01;
+  spherical.phi = Math.max(0.15, Math.min(Math.PI/2, spherical.phi + dy * 0.01));
+  lastMouse = {x:e.clientX, y:e.clientY};
+  updateCamera();
+});
+canvas3.addEventListener('wheel', e => {
+  spherical.r = Math.max(4, Math.min(20, spherical.r + e.deltaY * 0.02));
+  updateCamera();
+  e.preventDefault();
+}, {passive:false});
+
+// Touch support
+let lastTouch = null;
+canvas3.addEventListener('touchstart', e => { lastTouch = e.touches[0]; });
+canvas3.addEventListener('touchmove', e => {
+  if (!lastTouch) return;
+  const t = e.touches[0];
+  const dx = t.clientX - lastTouch.clientX, dy = t.clientY - lastTouch.clientY;
+  spherical.theta -= dx * 0.01;
+  spherical.phi = Math.max(0.15, Math.min(Math.PI/2, spherical.phi + dy * 0.01));
+  lastTouch = t;
+  updateCamera();
+  e.preventDefault();
+}, {passive:false});
+
+// ── MESH BUILDING ─────────────────────────────────────────────────────────────
+let surfaceMesh, wireframe, pathLine, pointMesh, trailMeshes = [];
+
+function lossVal(x, y) { return surfaces[surfKey](x, y); }
+
+function buildSurface() {
+  // Remove old
+  if (surfaceMesh) scene.remove(surfaceMesh);
+  if (wireframe)   scene.remove(wireframe);
+
+  const geo = new THREE.BufferGeometry();
+  const verts = [], colors = [], indices = [];
+  const step = (2*RANGE) / (GRID-1);
+
+  // Compute z range for color mapping
+  let zMin = Infinity, zMax = -Infinity;
+  const zGrid = [];
+  for (let i = 0; i < GRID; i++) {
+    zGrid.push([]);
+    for (let j = 0; j < GRID; j++) {
+      const x = -RANGE + i*step, y = -RANGE + j*step;
+      const z = lossVal(x, y);
+      zGrid[i].push(z);
+      if (z < zMin) zMin = z;
+      if (z > zMax) zMax = z;
+    }
+  }
+
+  const loCol = new THREE.Color(COLORS.surface_lo);
+  const hiCol = new THREE.Color(COLORS.surface_hi);
+  const tmpCol = new THREE.Color();
+
+  for (let i = 0; i < GRID; i++) {
+    for (let j = 0; j < GRID; j++) {
+      const x = -RANGE + i*step, y = -RANGE + j*step;
+      const z = zGrid[i][j];
+      const t = Math.min(1, Math.max(0, (z - zMin) / (zMax - zMin + 1e-9)));
+      verts.push(x, z * 0.5, y);   // y-up: z becomes height
+      tmpCol.lerpColors(loCol, hiCol, t);
+      colors.push(tmpCol.r, tmpCol.g, tmpCol.b);
+    }
+  }
+
+  for (let i = 0; i < GRID-1; i++) {
+    for (let j = 0; j < GRID-1; j++) {
+      const a = i*GRID+j, b = a+1, c = (i+1)*GRID+j, d = c+1;
+      indices.push(a,b,d, a,d,c);
+    }
+  }
+
+  geo.setAttribute('position', new THREE.Float32BufferAttribute(verts, 3));
+  geo.setAttribute('color',    new THREE.Float32BufferAttribute(colors, 3));
+  geo.setIndex(indices);
+  geo.computeVertexNormals();
+
+  const mat = new THREE.MeshPhongMaterial({
+    vertexColors: true, side: THREE.DoubleSide,
+    shininess: 30, opacity: 0.92, transparent: true
+  });
+  surfaceMesh = new THREE.Mesh(geo, mat);
+  scene.add(surfaceMesh);
+
+  // Wireframe overlay
+  const wgeo = new THREE.WireframeGeometry(geo);
+  const wmat = new THREE.LineBasicMaterial({ color: 0xc4b8a4, opacity: 0.18, transparent: true });
+  wireframe = new THREE.LineSegments(wgeo, wmat);
+  scene.add(wireframe);
+}
+
+function worldPos(x, y) {
+  const z = lossVal(x, y) * 0.5 + 0.08;
+  return new THREE.Vector3(x, z, y);
+}
+
+function buildPath() {
+  // Remove old path & trail
+  if (pathLine) scene.remove(pathLine);
+  trailMeshes.forEach(m => scene.remove(m));
+  trailMeshes = [];
+  if (pointMesh) scene.remove(pointMesh);
+
+  if (path.length < 2) {
+    if (path.length === 1) addCurrentPoint();
+    return;
+  }
+
+  // Line
+  const pts = path.map(([x,y]) => worldPos(x,y));
+  const geo = new THREE.BufferGeometry().setFromPoints(pts);
+  const mat = new THREE.LineBasicMaterial({ color: COLORS.path, linewidth: 2 });
+  pathLine = new THREE.Line(geo, mat);
+  scene.add(pathLine);
+
+  // Trail spheres (faded old points)
+  const sphereGeo = new THREE.SphereGeometry(0.06, 8, 8);
+  for (let i = 0; i < path.length - 1; i++) {
+    const t = i / (path.length - 1);
+    const mat = new THREE.MeshPhongMaterial({
+      color: COLORS.point_old,
+      opacity: 0.3 + 0.4 * t,
+      transparent: true
+    });
+    const m = new THREE.Mesh(sphereGeo, mat);
+    m.position.copy(worldPos(path[i][0], path[i][1]));
+    scene.add(m);
+    trailMeshes.push(m);
+  }
+
+  addCurrentPoint();
+}
+
+function addCurrentPoint() {
+  if (pointMesh) scene.remove(pointMesh);
+  const geo = new THREE.SphereGeometry(0.12, 16, 16);
+  const mat = new THREE.MeshPhongMaterial({ color: COLORS.point, emissive: 0x7a4f2c, emissiveIntensity: 0.3 });
+  pointMesh = new THREE.Mesh(geo, mat);
+  pointMesh.position.copy(worldPos(pos[0], pos[1]));
+  scene.add(pointMesh);
+}
+
+// ── LOSS CHART ────────────────────────────────────────────────────────────────
+const lossCanvas = document.getElementById('loss-chart');
+const lctx = lossCanvas.getContext('2d');
+
+function drawLossChart() {
+  const W = lossCanvas.offsetWidth * window.devicePixelRatio || 280;
+  const H = 130 * window.devicePixelRatio;
+  lossCanvas.width = W; lossCanvas.height = H;
+  const dpr = window.devicePixelRatio || 1;
+  lctx.scale(dpr, dpr);
+  const w = lossCanvas.offsetWidth || 280, h = 130;
+
+  lctx.clearRect(0, 0, w, h);
+  lctx.fillStyle = '#ddd4c5';
+  lctx.fillRect(0, 0, w, h);
+
+  if (lossHistory.length < 2) {
+    lctx.fillStyle = '#5e5345';
+    lctx.font = '11px DM Sans, sans-serif';
+    lctx.textAlign = 'center';
+    lctx.fillText('Run descent to see loss curve', w/2, h/2);
+    return;
+  }
+
+  const pad = {t:12, r:12, b:24, l:40};
+  const cw = w - pad.l - pad.r, ch = h - pad.t - pad.b;
+
+  const minL = Math.min(...lossHistory), maxL = Math.max(...lossHistory);
+  const rangeL = maxL - minL || 1;
+
+  // Grid lines
+  lctx.strokeStyle = '#c4b8a4';
+  lctx.lineWidth = 0.5;
+  for (let i = 0; i <= 3; i++) {
+    const yy = pad.t + (i/3)*ch;
+    lctx.beginPath(); lctx.moveTo(pad.l, yy); lctx.lineTo(pad.l+cw, yy); lctx.stroke();
+    const val = maxL - (i/3)*rangeL;
+    lctx.fillStyle = '#5e5345';
+    lctx.font = '9px DM Sans, sans-serif';
+    lctx.textAlign = 'right';
+    lctx.fillText(val.toFixed(2), pad.l-4, yy+3);
+  }
+
+  // Gradient fill
+  const grad = lctx.createLinearGradient(0, pad.t, 0, pad.t+ch);
+  grad.addColorStop(0, 'rgba(122,79,44,0.35)');
+  grad.addColorStop(1, 'rgba(122,79,44,0.03)');
+
+  lctx.beginPath();
+  lossHistory.forEach((l, i) => {
+    const x = pad.l + (i/(lossHistory.length-1))*cw;
+    const y = pad.t + ch - ((l - minL)/rangeL)*ch;
+    i === 0 ? lctx.moveTo(x, y) : lctx.lineTo(x, y);
+  });
+  const lastX = pad.l+cw, firstX = pad.l;
+  lctx.lineTo(lastX, pad.t+ch); lctx.lineTo(firstX, pad.t+ch);
+  lctx.closePath();
+  lctx.fillStyle = grad; lctx.fill();
+
+  // Line
+  lctx.beginPath();
+  lossHistory.forEach((l, i) => {
+    const x = pad.l + (i/(lossHistory.length-1))*cw;
+    const y = pad.t + ch - ((l - minL)/rangeL)*ch;
+    i === 0 ? lctx.moveTo(x, y) : lctx.lineTo(x, y);
+  });
+  lctx.strokeStyle = '#7a4f2c'; lctx.lineWidth = 2; lctx.stroke();
+
+  // Current point
+  const ci = lossHistory.length-1;
+  const cx2 = pad.l + (ci/(lossHistory.length-1||1))*cw;
+  const cy2 = pad.t + ch - ((lossHistory[ci]-minL)/rangeL)*ch;
+  lctx.beginPath(); lctx.arc(cx2, cy2, 4, 0, Math.PI*2);
+  lctx.fillStyle = '#4a2e10'; lctx.fill();
+
+  // x-axis labels
+  lctx.fillStyle = '#5e5345'; lctx.font = '9px DM Sans, sans-serif'; lctx.textAlign = 'center';
+  lctx.fillText('0', pad.l, h-6);
+  lctx.fillText(String(lossHistory.length-1), pad.l+cw, h-6);
+  lctx.fillText('Step', pad.l+cw/2, h-6);
+}
+
+// ── STEP LOG ──────────────────────────────────────────────────────────────────
+function addLogRow(step, x, y, loss) {
+  const log = document.getElementById('step-log');
+  // Remove active from all
+  log.querySelectorAll('.log-row').forEach(r => r.classList.remove('active'));
+  const row = document.createElement('div');
+  row.className = 'log-row active';
+  row.innerHTML = `<span class="step-num">#${step}</span><span>x=${x.toFixed(3)}, y=${y.toFixed(3)}</span><span>L=${loss.toFixed(4)}</span>`;
+  log.appendChild(row);
+  log.scrollTop = log.scrollHeight;
+}
+
+// ── STATS ─────────────────────────────────────────────────────────────────────
+function updateStats() {
+  const loss = lossVal(pos[0], pos[1]);
+  document.getElementById('stat-step').textContent = stepCount;
+  document.getElementById('stat-loss').textContent = loss.toFixed(4);
+  document.getElementById('stat-x').textContent = pos[0].toFixed(3);
+  document.getElementById('stat-y').textContent = pos[1].toFixed(3);
+}
+
+// ── DESCENT ───────────────────────────────────────────────────────────────────
+function doStep() {
+  const [gx, gy] = gradients[surfKey](pos[0], pos[1]);
+  const norm = Math.sqrt(gx*gx + gy*gy) + 1e-9;
+  // Clamp gradient to avoid explosions
+  const scale = Math.min(1, 2/norm);
+  pos[0] -= lr * gx * scale;
+  pos[1] -= lr * gy * scale;
+  // Clamp to range
+  pos[0] = Math.max(-RANGE, Math.min(RANGE, pos[0]));
+  pos[1] = Math.max(-RANGE, Math.min(RANGE, pos[1]));
+  path.push([...pos]);
+  const loss = lossVal(pos[0], pos[1]);
+  lossHistory.push(loss);
+  stepCount++;
+  buildPath();
+  updateStats();
+  drawLossChart();
+  addLogRow(stepCount, pos[0], pos[1], loss);
+}
+
+function stepOnce() {
+  stopDescent();
+  doStep();
+}
+
+function startDescent() {
+  if (running) { stopDescent(); return; }
+  running = true;
+  const interval = Math.max(50, 400 / speed);
+  animTimer = setInterval(() => {
+    for (let i = 0; i < speed; i++) doStep();
+    // Auto-stop near minimum
+    const [gx,gy] = gradients[surfKey](pos[0], pos[1]);
+    if (Math.sqrt(gx*gx+gy*gy) < 0.001 || stepCount > 500) stopDescent();
+  }, interval);
+}
+
+function stopDescent() {
+  running = false;
+  if (animTimer) { clearInterval(animTimer); animTimer = null; }
+}
+
+function resetDescent() {
+  stopDescent();
+  const startKey = document.getElementById('start-select').value;
+  pos = startPositions[startKey]();
+  path = [[...pos]];
+  lossHistory = [lossVal(pos[0], pos[1])];
+  stepCount = 0;
+  document.getElementById('step-log').innerHTML = '';
+  buildPath();
+  updateStats();
+  drawLossChart();
+  addLogRow(0, pos[0], pos[1], lossHistory[0]);
+}
+
+// ── RESIZE ───────────────────────────────────────────────────────────────────
+function resizeRenderer() {
+  const w = canvas3.clientWidth, h = canvas3.clientHeight;
+  renderer.setSize(w, h, false);
+  camera.aspect = w/h;
+  camera.updateProjectionMatrix();
+}
+
+window.addEventListener('resize', () => { resizeRenderer(); drawLossChart(); });
+
+// ── RENDER LOOP ───────────────────────────────────────────────────────────────
+function animate() {
+  requestAnimationFrame(animate);
+  // Pulse current point
+  if (pointMesh) {
+    const t = Date.now() * 0.003;
+    pointMesh.scale.setScalar(1 + 0.15 * Math.sin(t));
+  }
+  renderer.render(scene, camera);
+}
+
+// ── UI BINDINGS ───────────────────────────────────────────────────────────────
+document.getElementById('lr').addEventListener('input', e => {
+  lr = parseFloat(e.target.value);
+  document.getElementById('lr-val').textContent = lr.toFixed(2);
+});
+
+document.getElementById('surface-select').addEventListener('change', e => {
+  surfKey = e.target.value;
+  buildSurface();
+  resetDescent();
+});
+
+document.getElementById('speed').addEventListener('input', e => {
+  speed = parseInt(e.target.value);
+  const labels = ['','1×','2×','3×','4×','5×'];
+  document.getElementById('speed-val').textContent = labels[speed];
+  if (running) { stopDescent(); startDescent(); }
+});
+
+// ── INIT ─────────────────────────────────────────────────────────────────────
+resizeRenderer();
+buildSurface();
+resetDescent();
+animate();
+</script>
+</body>
+</html>
