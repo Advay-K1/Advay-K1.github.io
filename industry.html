@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Advay Kadam</title>
+  <title>Industry · Advay Kadam</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Space+Mono:ital,wght@0,400;1,400&display=swap" rel="stylesheet" />
@@ -37,10 +37,10 @@
     </div>
 
     <nav class="sidebar-nav">
-      <a href="index.html" class="active">me</a>
+      <a href="index.html">me</a>
       <a href="interests.html">interests</a>
       <a href="research.html">research</a>
-      <a href="industry.html">industry</a>
+      <a href="industry.html" class="active">industry</a>
     </nav>
 
     <div class="sidebar-bottom">
@@ -50,32 +50,49 @@
 
   <!-- MAIN -->
   <main class="content">
+    <h1 class="page-title">Industry</h1>
 
-    <header class="post-header">
-      <p class="desc">&ldquo;building efficient systems for machine learning&rdquo;</p>
-    </header>
+    <section>
+      <div class="research-areas">
 
-    <article>
-      <p>I'm a student researcher at the <a href="https://illinois.edu/" target="_blank" rel="noopener"><strong>University of Illinois Urbana&#8209;Champaign</strong></a>, studying Computer Science and Statistics.</p>
-      <p>My work sits at the intersection of <strong>machine learning</strong> and <strong>computer systems</strong> &mdash; I'm broadly interested in building efficient, scalable, and principled computational systems for training and serving large-scale models.</p>
-      <p>Feel free to <a href="mailto:advay.kadam10@gmail.com">reach out</a> if you'd like to chat, collaborate, or grab a coffee!</p>
-    </article>
+        <div class="research-area">
+          <div class="research-area-bar"></div>
+          <div>
+            <p class="research-area-title">Software Development Engineer Intern &mdash; Amazon <span style="font-weight:300; color:var(--text-muted)">&middot; Summer 2026</span></p>
+            <p class="research-area-desc">
+              I will be joining the Amazon Traffic Engineering team in NYC, building scalable, high-performance
+networking and real-time data processing systems that steer and protect customer internet ingress.
+            </p>
+          </div>
+        </div>
 
-    <section id="news">
-      <h2 class="section-heading">News</h2>
-      <ul class="news-list">
-        <li><span class="news-date">Jul 2026</span> Joined the Catalyst Group at Carnegie Mellon University as a Visiting Researcher, formalizing PTX asynchronous synchronization semantics for NVIDIA Hopper GPU kernels.</li>
-        <li><span class="news-date">Feb 2026</span> Accepted offer to join Amazon as a Software Development Engineer Intern for Summer 2026 in NYC.</li>
-        <li><span class="news-date">Dec 2025</span> Started a new research project on developing kernel fusions for AWS Trainium Hardware at the Supercomputing System & AI Lab (SSAIL) at UIUC.</li>
-        <li><span class="news-date">Aug 2025</span> Completed internship at BNY Mellon, shipping a multi-agent system (MAS) into production.</li>
-      </ul>
+        <div class="research-area">
+          <div class="research-area-bar"></div>
+          <div>
+            <p class="research-area-title">Software Engineer Intern &mdash; BNY Mellon <span style="font-weight:300; color:var(--text-muted)">&middot; Summer 2025</span></p>
+            <p class="research-area-desc">
+              Engineered a FastAPI microservice orchestrating a multi-agent LangChain pipeline with AWS SQS and Lambda to classify and persist column-level security labels for 30,000+ dataset columns across 500+ daily requests, reducing end-to-end latency by 30%
+            </p>
+          </div>
+        </div>
+
+        <div class="research-area">
+          <div class="research-area-bar"></div>
+          <div>
+            <p class="research-area-title">Software Engineer Intern &mdash; Procter & Gamble <span style="font-weight:300; color:var(--text-muted)">&middot; Summer 2024</span></p>
+            <p class="research-area-desc">
+              Optimized an Azure Databricks sales ETL pipeline and built a YOLOv9-powered ML ingestion pipeline for retail shelf image classification, reducing runtime by 40%, cluster costs by 25%, and increasing labeled data coverage by 20%.
+            </p>
+          </div>
+        </div>
+
+      </div>
     </section>
 
     <footer>
       <span>© Advay Kadam</span>
       <a href="https://github.com/Advay-K1" target="_blank" rel="noopener">GitHub</a>
     </footer>
-
   </main>
 
 </body>

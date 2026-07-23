@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Advay Kadam</title>
+  <title>Research · Advay Kadam</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Space+Mono:ital,wght@0,400;1,400&display=swap" rel="stylesheet" />
@@ -37,9 +37,9 @@
     </div>
 
     <nav class="sidebar-nav">
-      <a href="index.html" class="active">me</a>
+      <a href="index.html">me</a>
       <a href="interests.html">interests</a>
-      <a href="research.html">research</a>
+      <a href="research.html" class="active">research</a>
       <a href="industry.html">industry</a>
     </nav>
 
@@ -50,32 +50,48 @@
 
   <!-- MAIN -->
   <main class="content">
+    <h1 class="page-title">Research</h1>
 
-    <header class="post-header">
-      <p class="desc">&ldquo;building efficient systems for machine learning&rdquo;</p>
-    </header>
+    <section>
+      <div class="research-areas">
 
-    <article>
-      <p>I'm a student researcher at the <a href="https://illinois.edu/" target="_blank" rel="noopener"><strong>University of Illinois Urbana&#8209;Champaign</strong></a>, studying Computer Science and Statistics.</p>
-      <p>My work sits at the intersection of <strong>machine learning</strong> and <strong>computer systems</strong> &mdash; I'm broadly interested in building efficient, scalable, and principled computational systems for training and serving large-scale models.</p>
-      <p>Feel free to <a href="mailto:advay.kadam10@gmail.com">reach out</a> if you'd like to chat, collaborate, or grab a coffee!</p>
-    </article>
+        <div class="research-area">
+          <div class="research-area-bar"></div>
+          <div>
+            <p class="research-area-title">Visiting Researcher @ Catalyst Group, Carnegie Mellon University</p>
+            <p class="research-area-desc">
+              Formalizing the semantics of PTX asynchronous synchronization primitives (mbarrier, warp specialization) to verify race and deadlock freedom in optimized NVIDIA Hopper GPU kernels.
+            </p>
+          </div>
+        </div>
 
-    <section id="news">
-      <h2 class="section-heading">News</h2>
-      <ul class="news-list">
-        <li><span class="news-date">Jul 2026</span> Joined the Catalyst Group at Carnegie Mellon University as a Visiting Researcher, formalizing PTX asynchronous synchronization semantics for NVIDIA Hopper GPU kernels.</li>
-        <li><span class="news-date">Feb 2026</span> Accepted offer to join Amazon as a Software Development Engineer Intern for Summer 2026 in NYC.</li>
-        <li><span class="news-date">Dec 2025</span> Started a new research project on developing kernel fusions for AWS Trainium Hardware at the Supercomputing System & AI Lab (SSAIL) at UIUC.</li>
-        <li><span class="news-date">Aug 2025</span> Completed internship at BNY Mellon, shipping a multi-agent system (MAS) into production.</li>
-      </ul>
+        <div class="research-area">
+          <div class="research-area-bar"></div>
+          <div>
+            <p class="research-area-title">Machine Learning Systems Researcher @ Supercomputing System & AI Lab</p>
+            <p class="research-area-desc">
+             Developing fused training kernels for Mixture-of-Experts models on AWS Trainium via the Neuron Kernel Interface, using PyTorch Profiler to identify and target high-frequency transformer primitives for kernel-fusion optimizations that improve training throughput.
+            </p>
+          </div>
+        </div>
+
+        <div class="research-area">
+          <div class="research-area-bar"></div>
+          <div>
+            <p class="research-area-title">Supercomputing Systems Researcher @ National Center for Supercomputing Applications</p>
+            <p class="research-area-desc">
+              Analyzed 2+ PB of real-time Zeek network telemetry to assess post-quantum cryptography readiness across enterprise SSH traffic, and built a Flask dashboard to stream live PQC metrics and cryptographic risk insights.
+            </p>
+          </div>
+        </div>
+
+      </div>
     </section>
 
     <footer>
       <span>© Advay Kadam</span>
       <a href="https://github.com/Advay-K1" target="_blank" rel="noopener">GitHub</a>
     </footer>
-
   </main>
 
 </body>
